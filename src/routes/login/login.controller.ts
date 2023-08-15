@@ -40,7 +40,7 @@ export class LoginController {
   @Post('/valida_codigo')
   validaCodigo(
     @Body() body: ValidaCodigoLoginBody,
-  ): Promise<ValidaCodigoLoginResponse> {
+  ): Promise<ValidaCodigoLoginResponse | void> {
     return this.loginService.validaCodigo(body);
   }
 

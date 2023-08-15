@@ -53,7 +53,7 @@ export class LoginService {
 
   async validaCodigo(
     body: ValidaCodigoLoginBody,
-  ): Promise<ValidaCodigoLoginResponse> {
+  ): Promise<ValidaCodigoLoginResponse | void> {
     const codigoValidaEmail =
       await this.codigosValidaEmailRepositorio.findUnique({
         where: {
@@ -63,7 +63,7 @@ export class LoginService {
 
     // verifica se usuario ja tentou 3 ou mais vezes o login
     if (!codigoValidaEmail || codigoValidaEmail.tentativas >= 3) {
-      throw new InternalServerErrorException();
+      return undefined;
     }
 
     if (codigoValidaEmail.codigo !== body.codigo) {
@@ -75,7 +75,7 @@ export class LoginService {
         },
         where: { cpf: body.cpf },
       });
-      throw new InternalServerErrorException();
+      return undefined;
     }
 
     // se acertou o codigo, remove da base
@@ -87,7 +87,7 @@ export class LoginService {
 
     const clienteResponse = await this.apiClienteService.buscaCliente(body);
 
-    if (!clienteResponse) throw new InternalServerErrorException();
+    if (!clienteResponse) return undefined;
 
     const payload = {
       id: clienteResponse.id,
